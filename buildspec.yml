@@ -3,17 +3,20 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging into Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 235494789903.dkr.ecr.ap-south-1.amazonaws.com/ecr_repo
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 235494789903.dkr.ecr.ap-south-1.amazonaws.com
+      - REPOSITORY_URI=235494789903.dkr.ecr.ap-south-1.amazonaws.com/ecr_repo
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)  # Shorten tag to first 7 characters
+
   build:
     commands:
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - echo Building Docker image...
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .  # Use shortened tag
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
+
   post_build:
     commands:
-      - echo Pushing the Docker image to ECR...
-      - docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - echo Writing image definition file...
-      - printf '[{"name":"my-container","image":"%s"}]' $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
-artifacts:
-  files: imagedefinitions.json
+      - echo Pushing Docker image to Amazon ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:latest
+      - echo Build and Push Completed Successfully!
