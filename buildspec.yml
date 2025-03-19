@@ -20,3 +20,8 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:latest
       - echo Build and Push Completed Successfully!
+      - echo Deploying to EKS...
+      - aws eks update-kubeconfig --name my-cluster --region ap-south-1
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+      - echo Deployment Completed Successfully!
