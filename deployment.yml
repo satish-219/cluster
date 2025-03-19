@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+spec:
+      containers:
+        - name: my-app-container
+          image: 235494789903.dkr.ecr.ap-south-1.amazonaws.com/ecr_repo:latest  # Use latest pushed image from ECR
+          ports:
+            - containerPort: 80
