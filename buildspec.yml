@@ -52,7 +52,7 @@ phases:
 
       - echo "Installing AWS Load Balancer Controller..."
       - helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-          --set namespace kube-system \
+          -n kube-system \
           --set clusterName=$CLUSTER_NAME \
           --set serviceAccount.create=false \
           --set serviceAccount.name=$ALB_SERVICE_ACCOUNT
