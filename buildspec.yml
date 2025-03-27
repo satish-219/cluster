@@ -23,4 +23,5 @@ phases:
       - echo Deploying to EKS...
       - aws eks update-kubeconfig --name my-cluster --region ap-south-1
       - kubectl apply -f deployment.yml --validate=false
+      - kubectl apply -f ingress.yml
       - echo Deployment Completed Successfully!
