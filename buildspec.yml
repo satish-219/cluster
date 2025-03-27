@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 235494789903.dkr.ecr.ap-south-1.amazonaws.com
-      - REPOSITORY_URI=235494789903.dkr.ecr.ap-south-1.amazonaws.com/ecr_repo
+      - REPOSITORY_URI=235494789903.dkr.ecr.ap-south-1.amazonaws.com/eks_repo
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)  # Shorten tag to first 7 characters
 
   build:
