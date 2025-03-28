@@ -27,12 +27,8 @@ phases:
       - curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
       - aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam-policy.json || echo "Policy exists"
       - echo "Creating Service Account for ALB Controller..."
-      - eksctl create iamserviceaccount \
-        --cluster "$CLUSTER_NAME" \
-        --namespace kube-system \
-        --name aws-load-balancer-controller \
-        --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" \
-        --approve || echo "Service account already exists or failed to create."
+      - eksctl create iamserviceaccount --cluster "$CLUSTER_NAME" --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" --approve || echo "Service account already exists or failed to create."
+
 
   build:
     commands:
