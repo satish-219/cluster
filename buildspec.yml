@@ -33,7 +33,8 @@ phases:
           --namespace kube-system \
           --name aws-load-balancer-controller \
           --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" \
-          --approve
+          --approve \
+          --override-existing-serviceaccounts
 
       - echo "Waiting for Service Account to be created..."
       - kubectl wait --for=condition=Ready serviceaccount/aws-load-balancer-controller -n kube-system --timeout=60s
