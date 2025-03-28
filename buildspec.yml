@@ -22,7 +22,11 @@ phases:
 
       - echo "Checking IAM OIDC provider for EKS..."
       - eksctl utils associate-iam-oidc-provider --region $AWS_REGION --cluster $CLUSTER_NAME --approve || echo "OIDC already exists"
-  
+      - echo "Deleting existing IAM service account if present..."
+      - eksctl delete iamserviceaccount \
+          --cluster "$CLUSTER_NAME" \
+          --namespace kube-system \
+          --name aws-load-balancer-controller || echo "IAM service account not found."
       - echo "Deleting existing service account if present..."
       - kubectl delete sa aws-load-balancer-controller -n kube-system --ignore-not-found
 
