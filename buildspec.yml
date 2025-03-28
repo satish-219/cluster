@@ -22,12 +22,26 @@ phases:
 
       - echo "Checking IAM OIDC provider for EKS..."
       - eksctl utils associate-iam-oidc-provider --region $AWS_REGION --cluster $CLUSTER_NAME --approve || echo "OIDC already exists"
+  
+      - echo "Deleting existing service account if present..."
+      - kubectl delete sa aws-load-balancer-controller -n kube-system --ignore-not-found
 
-      - echo "Creating IAM policy for ALB Controller..."
-      - curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
-      - aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam-policy.json || echo "Policy exists"
       - echo "Creating Service Account for ALB Controller..."
-      - eksctl create iamserviceaccount --cluster "$CLUSTER_NAME" --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" --approve --override-existing-serviceaccounts || echo "Service account already exists or failed to create."
+      - eksctl create iamserviceaccount \
+        --cluster "$CLUSTER_NAME" \
+        --namespace kube-system \
+        --name aws-load-balancer-controller \
+        --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" \
+        --approve
+
+      - echo "Waiting for Service Account to be created..."
+      - kubectl wait --for=condition=Ready serviceaccount/aws-load-balancer-controller -n kube-system --timeout=60s
+
+      - echo "Restarting the aws-load-balancer-controller deployment..."
+      - kubectl rollout restart deployment/aws-load-balancer-controller -n kube-system
+
+      - echo "Waiting for the ALB Controller pods to be ready..."
+      - kubectl rollout status deployment/aws-load-balancer-controller -n kube-system --timeout=300s
 
 
   build:
