@@ -38,7 +38,7 @@ phases:
       - helm repo update
       - helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller --namespace kube-system --set clusterName=$CLUSTER_NAME --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
       - echo "Deploying application..."
-      - kubectl apply -f deployments.yml
+      - kubectl apply -f deployment.yml
       - kubectl apply -f service.yml
       - kubectl apply -f ingress.yml
 
