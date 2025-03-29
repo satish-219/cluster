@@ -28,7 +28,7 @@ phases:
       - docker push $(aws sts get-caller-identity --query 'Account' --output text).dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG
       - echo "Creating IAM Service Account for ALB Controller..."
       - eksctl create iamserviceaccount --cluster "my-cluster" --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/AWSLoadBalancerControllerIAMPolicy" --approve --override-existing-serviceaccounts
-      - kubectl apply -k github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master
+      - kubectl apply -k "github.com/aws/eks-charts?ref=master//stable/aws-load-balancer-controller/crds"
       - helm repo add eks https://aws.github.io/eks-charts
       - helm repo update
       - helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller --namespace kube-system --set clusterName=$CLUSTER_NAME --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
